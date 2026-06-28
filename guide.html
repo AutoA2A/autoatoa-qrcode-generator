@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>使用指南 - 码上生成</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #2f6fed;
+    --primary-hover: #2259c7;
+    --primary-light: #e8f0fe;
+    --bg: #f0f4ff;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 0 12px rgba(0,0,0,.08);
+    --radius: 8px;
+    --spacing-sm: 16px;
+    --spacing-md: 24px;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== Top Navigation ===== */
+  .navbar {
+    background: var(--card);
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
+  }
+  .navbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    gap: var(--spacing-sm);
+  }
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--primary);
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .navbar-brand svg { width: 28px; height: 28px; flex-shrink: 0; }
+  .navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+    flex-wrap: wrap;
+  }
+  .navbar-links a {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    font-size: .875rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background .2s, color .2s;
+    white-space: nowrap;
+  }
+  .navbar-links a:hover { background: var(--primary-light); color: var(--primary); }
+  .navbar-links a.active { background: var(--primary-light); color: var(--primary); font-weight: 600;urger */
+  .navbar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius);
+  }
+  .navbar-toggle span {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--text);
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: .3s;
+  }
+
+  /* ===== Page Header ===== */
+  .page-header {
+    background: linear-gradient(135deg, #2f6ed 0%, #4a8af7 100%);
+    color: #fff;
+    padding: var(--spacing-md) 0;
+  }
+  .page-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+  }
+  .page-header h1 { font-size: 1.5rem; font-weight: 700; }
+  .page-header p { font-size: .9rem; opacity: .85; margin-top: 4px; }
+
+  /* ===== Main Container ===== */
+  .main-wrapper {
+    flex: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .navbar-inner { flex-wrap: wrap; height: auto; padding: 10px var(--spacing-sm); }
+    .navbar-toggle { display: block; }
+    .navbar-links {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      gap: 2px;
+      padding-top: var(--spacing-sm);
+    }
+    .navbar-links.open { display: flex; }
+    .navbar-links a { width: 100%; padding: 10px 14px; }
+    .page-header h1 { font-size: 1.25rem; }
+    .main-wrapper { padding: var(--spacing-sm); }
+  }
+  @media (max-width: 480px) {
+    .navbar-brand { font-size: 1rem; }
+    .navbar-brand svg { width: 22px; height: 22px; }
+  }
+
+  /* ===== Utility ===== */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--spacing-md);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    text-decoration: none;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn-outline:hover { background: var(--primary-light); }
+</style>
+<meta name="description" content="功能介绍、使用教程、QR码知识科普、常见问题解答"><meta name="keywords" content="二维码生成,QR码,自定义颜色,批量生成,历史记录,下载PNG,SVG导出,容错率"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="使用指南 - 码上生成"><meta property="og:description" content="功能介绍、使用教程、QR码知识科普、常见问题解答"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="使用指南 - 码上生成"><meta name="twitter:description" content="功能介绍、使用教程、QR码知识科普、常见问题解答"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"使用指南 - 码上生成","description":"功能介绍、使用教程、QR码知识科普、常见问题解答","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+
+<!-- ===== Top Navigation ===== -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand" aria-label="码上生成 首页">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="10" height="10" rx="2" fill="#2f6fed"/>
+        <rect x="16" y="2" width="10" height="10" rx="2" fill="#2f6fed"/>
+        <rect x="2" y="16" width="10" height="10" rx="2" fill="#2f6fed"/>
+        <rect x="16" y="16" width="4" height="4" rx="1" fill="#2f6fed"/>
+        <rect x="22" y="16" width="4" height="4" rx="1" fill="#2f6fed"/>
+        <rect x="16" y="22" width="4" height="4" rx="1" fill="#2f6fed"/>
+        <rect x="22" y="22" width="4" height="4" rx="1" fill="#2f6fed"/>
+      </svg>
+      码上生成
+    </a>
+    <button class="navbar-toggle" aria-label="切换菜单" onclick="document.querySelector('.navbar-links').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar-links">
+      <li><a href="index.html">首页</a></li>
+      <li><a href="batch.html">批量生成</a></li>
+      <li><a href="history.html">历史记录</a></li>
+      <li><a href="guide.html">使用指南</a></li>
+      <li><a href="style.html">样式定制</a></li>
+      <li><a href="share.html">分享码</a></li>
+      <li><a href="api.html">API文档</a></li>
+      <li><a href="settings.html">设置</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===== Page Header ===== -->
+<header class="page-header">
+  <div class="page-header-inner">
+    <h1>码上生成</h1>
+    <p>在线QR码生成器 — 快速、免费、无需注册</p>
+  </div>
+</header>
+
+<!-- ===== Main Content Area ===== -->
+<main class="main-wrapper">
+  
+<section class="main-wrapper">
+  <section>
+    <h2>功能介绍</h2>
+    <p>码上生成是一款完全基于浏览器的在线 QR 码生成工具，所有生成、编辑、下载等操作均在本地完成，无需后端服务器，离线也能使用。</p>
+    <ul>
+      <li>实时预览：输入内容即时生成 QR 码。</li>
+      <li>多种数据类型：支持普通文本、网址、邮箱、电话、短信、Wi‑Fi 等。</li>
+      <li>可自定义尺寸、前景色、背景色、容错率。</li>
+      <li>支持 PNG、SVG 两种格式下载。</li>
+      <li>批量生成、历史记录、样式定制、分享链接等进阶功能。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>使用教程</h2>
+    <ol>
+      <li><strong>打开生成页</strong>：访问 <a href="index.html">index.html</a>，页面即是可直接操作的工具。</li>
+      <li><strong>输入内容</strong>：在顶部的文本框中粘贴或输入需要编码的信息（如网址、文字等）。</li>
+      <li><strong>调整参数</strong>：使用下方的控件设置尺寸（像素）、前景色、背景色以及容错率（L、M、Q、H）。</li>
+      <li><strong>实时预览</strong>：参数修改后，左侧的 QR 码会即时更新。</li>
+      <li><strong>下载</strong>：点击右下角的 “下载 PNG” 或 “下载 SVG” 按钮保存生成的码。</li>
+      <li><strong>进阶功能</strong>：
+        <ul>
+          <li>批量生成：前往 <a href="batch.html">batch.html</a>，支持多行文本或 CSV 上传。</li>
+          <li>历史记录：访问 <a href="history.html">history.html</a> 查看、重新编辑或删除本地保存的记录。</li>
+          <li>样式定制：在 <a href="style.html">style.html</a> 中调整模块形状、渐变、Logo 嵌入等。</li>
+          <li>分享码：使用 <a href="share.html">share.html</a> 生成可直接分享的 URL。</li>
+          <li>API 文档：开发者可参考 <a href="api.html">api.html</a> 了解纯前端调用方式。</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>QR码知识科普</h2>
+    <p>QR 码（Quick Response Code）是一种二维条码，能够在较小的空间内存储大量信息。其主要特点包括：</p>
+    <ul>
+      <li>高容量：最多可存储 7089 位数字字符或 4296 位字母数字字符。</li>
+      <li>容错能力：即使部分被遮挡或损坏，仍可通过错误纠正码恢复信息（分 L、M、Q、H 四级）。</li>
+      <li>快速读取：使用手机摄像头或专用扫描仪可在毫秒级完成解码。</li>
+      <li>广泛应用：移动支付、电子票证、产品追溯、社交分享等场景。</li>
+    </ul>
+    <p>码上生成采用的算法遵循 ISO/IEC 18004 标准，支持全部四种容错级别。</li>
+  </section>
+
+  <section class="card">
+    <h2>常见问题解答</h2>
+    <dl>
+      <dt>问：生成的 QR 码在离线状态下能否使用？</dt>
+      <dd>答：可以。所有生成逻辑均在浏览器端运行，不依赖任何网络资源。</dd>
+
+      <dt>问：为什么有时候生成的码无法被扫描？</dt>
+      <dd>答：可能原因包括：<br>
+        • 前景色与背景色对比度不足；<br>
+        • 尺寸过小导致打印或显示时模块不清晰；<br>
+        • 容错级别过低而信息过长。<br>
+        建议调高对比度、增大尺寸或选择更高的容错级别（如 Q 或 H）。</dd>
+
+      <dt>问：可以嵌入 Logo 吗？</dt>
+      <dd>答：可以。前往 <a href="style.html">样式定制</a> 页面，开启 “Logo 嵌入” 功能并上传图片，系统会自动在 QR 码中心保留可容错区域并放置 Logo。</dd>
+
+      <dt>问：生成的记录保存在哪里？</dt>
+      <dd>答：记录保存于浏览器的 <code>localStorage</code> 中，仅在本地可见，不会上传至任何服务器。可在 <a href="history.html">历史记录</a> 页面管理或清除。</dd>
+
+      <dt>问：是否支持批量生成并打包下载？</dt>
+      <dd>答：支持。在 <a href="batch.html">批量生成</a> 页面中粘贴多行数据或上传 CSV，设置统一样式后点击“一键打包下载”，将得到一个包含所有 QR 码的 ZIP 文件。</dd>
+    </dl>
+  </section>
+</section>
+
+</main>
+
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
