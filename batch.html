@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>批量生成 - 码上生成</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #2f6fed;
+    --primary-hover: #2259c7;
+    --primary-light: #e8f0fe;
+    --bg: #f0f4ff;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 0 12px rgba(0,0,0,.08);
+    --radius: 8px;
+    --spacing-sm: 16px;
+    --spacing-md: 24px;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== Top Navigation ===== */
+  .navbar {
+    background: var(--card);
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
+  }
+  .navbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    gap: var(--spacing-sm);
+  }
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--primary);
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .navbar-brand svg { width: 28px; height: 28px; flex-shrink: 0; }
+  .navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+    flex-wrap: wrap;
+  }
+  .navbar-links a {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    font-size: .875rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background .2s, color .2s;
+    white-space: nowrap;
+  }
+  .navbar-links a:hover { background: var(--primary-light); color: var(--primary); }
+  .navbar-links a.active { background: var(--primary-light); color: var(--primary); font-weight: 600;urger */
+  .navbar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius);
+  }
+  .navbar-toggle span {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--text);
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: .3s;
+  }
+
+  /* ===== Page Header ===== */
+  .page-header {
+    background: linear-gradient(135deg, #2f6ed 0%, #4a8af7 100%);
+    color: #fff;
+    padding: var(--spacing-md) 0;
+  }
+  .page-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+  }
+  .page-header h1 { font-size: 1.5rem; font-weight: 700; }
+  .page-header p { font-size: .9rem; opacity: .85; margin-top: 4px; }
+
+  /* ===== Main Container ===== */
+  .main-wrapper {
+    flex: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .navbar-inner { flex-wrap: wrap; height: auto; padding: 10px var(--spacing-sm); }
+    .navbar-toggle { display: block; }
+    .navbar-links {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      gap: 2px;
+      padding-top: var(--spacing-sm);
+    }
+    .navbar-links.open { display: flex; }
+    .navbar-links a { width: 100%; padding: 10px 14px; }
+    .page-header h1 { font-size: 1.25rem; }
+    .main-wrapper { padding: var(--spacing-sm); }
+  }
+  @media (max-width: 480px) {
+    .navbar-brand { font-size: 1rem; }
+    .navbar-brand svg { width: 22px; height: 22px; }
+  }
+
+  /* ===== Utility ===== */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--spacing-md);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    text-decoration: none;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn-outline:hover { background: var(--primary-light); }
+</style>
+<meta name="description" content="批量生成页：支持粘贴多行文本或上传CSV文件，批量生成多个QR码，可统一设置样式，一键打包下载ZIP"><meta name="keywords" content="二维码生成,QR码,自定义颜色,批量生成,历史记录,下载PNG,SVG导出,容错率"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="批量生成 - 码上生成"><meta property="og:description" content="批量生成页：支持粘贴多行文本或上传CSV文件，批量生成多个QR码，可统一设置样式，一键打包下载ZIP"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="批量生成 - 码上生成"><meta name="twitter:description" content="批量生成页：支持粘贴多行文本或上传CSV文件，批量生成多个QR码，可统一设置样式，一键打包下载ZIP"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"批量生成 - 码上生成","description":"批量生成页：支持粘贴多行文本或上传CSV文件，批量生成多个QR码，可统一设置样式，一键打包下载ZIP","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+
+<!-- ===== Top Navigation ===== -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand" aria-label="码上生成 首页">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="10" height="10" rx="2" fill="#2f6fed"/>
+        <rect x="16" y="2" width="10" height="10" rx="2" fill="#2f6fed"/>
+        <rect x="2" y="16" width="10" height="10" rx="2" fill="#2f6fed"/>
+        <rect x="16" y="16" width="4" height="4" rx="1" fill="#2f6fed"/>
+        <rect x="22" y="16" width="4" height="4" rx="1" fill="#2f6fed"/>
+        <rect x="16" y="22" width="4" height="4" rx="1" fill="#2f6fed"/>
+        <rect x="22" y="22" width="4" height="4" rx="1" fill="#2f6fed"/>
+      </svg>
+      码上生成
+    </a>
+    <button class="navbar-toggle" aria-label="切换菜单" onclick="document.querySelector('.navbar-links').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar-links">
+      <li><a href="index.html">首页</a></li>
+      <li><a href="batch.html">批量生成</a></li>
+      <li><a href="history.html">历史记录</a></li>
+      <li><a href="guide.html">使用指南</a></li>
+      <li><a href="style.html">样式定制</a></li>
+      <li><a href="share.html">分享码</a></li>
+      <li><a href="api.html">API文档</a></li>
+      <li><a href="settings.html">设置</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===== Page Header ===== -->
+<header class="page-header">
+  <div class="page-header-inner">
+    <h1>码上生成</h1>
+    <p>在线QR码生成器 — 快速、免费、无需注册</p>
+  </div>
+</header>
+
+<!-- ===== Main Content Area ===== -->
+<main class="main-wrapper">
+  
+</script>
+
+But we need to use QRCode library; assume QRCode global from qrcode.min.js.
+
+We'll need to import JSZip and QRCode via script tags earlier in snippet. We'll add:
+
+<script src="qrcode.min.js"></script>
+<script src="jszip.min.js"></script>
+
+Assuming they exist.
+
+We'll then use QRCode.toCanvas? Actually QRCode.toDataURL returns a promise.
+
+We'll generate each QR code as a blob, add to zip, and create preview img.
+
+Implementation details:
+
+- Use QRCode.toDataURL(text, { width: size, margin, color: { dark: fg, light: bg }, errorCorrectionLevel: ecc })
+- Then fetch the dataURL, convert to blob, add to zip.
+- For preview, create an img element with src=dataURL, append to preview.
+
+After all promises resolved, generate zip blob and set download link.
+
+We'll need to create a temporary anchor for download.
+
+Let's craft final snippet.
+
+Make sure to use class "hidden" to hide elements (we need to define .hidden? Not in motherboard. Could use style="display:none". We'll just use inline style via class? Not defined. Safer to use style attribute.
+
+We'll use class "hidden" and define it via a <style> block inside snippet? That would be new CSS, which might be disallowed. Better to use inline style toggling via JS: set element.style.display = 'none' or 'block'.
+
+Thus we avoid new CSS.
+
+We'll initially hide tab-csv via style="display:none". preview and download-zip also hidden.
+
+Let's produce final HTML<section class="card">
+  <h2 class="mb-4">批量生成</h2>
+  <div>
+    <button class="tab-btn active" data-tab="text" style="padding:8px 16px;border:none;background:var(--primary-light);color:var(--primary);border-radius:var(--radius);cursor:pointer;">文本输入</button>
+    <button class="tab-btn" data-tab="csv" style="padding:8px 16px;border:none;background:transparent;color:var(--text-secondary);border-radius:var(--radius);cursor:pointer;">CSV 上传</button>
+  </div>
+  <div id="tab-text" style="margin-top:16px;">
+    <label class="d-block mb-2">每行一个内容（支持中文/英文/网址）</label>
+    <textarea id="textarea-input" rows="6" class="w-full mb-3" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font);" placeholder="每行一个数据"></textarea>
+  </div>
+  <div id="tab-csv" style="margin-top:16px;display:none;">
+    <label class="d-block mb-2">上传 CSV 文件（第一列为内容）</label>
+    <input type="file" id="csv-file" accept=".csv" class="w-full mb-3" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);">
+  </div>
+  <div class="space-y-3" style="margin-top:16px;">
+    <label class="d-block mb-1">前景色</label>
+    <input type="color" id="fg-color" value="#000000" class="w-full mb-2" style="width:100%;height:38px;border:1px solid var(--border);border-radius:var(--radius);">
+    <label class="d-block mb-1">背景色</label>
+    <input type="color" id="bg-color" value="#ffffff" class="w-full mb-2" style="width:100%;height:38px;border:1px solid var(--border);border-radius:var(--radius);">
+    <label class="d-block mb-1">尺寸 (px)</label>
+    <input type="number" id="size" value="200" min="50" max="1000" class="w-full mb-2" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);">
+    <label class="d-block mb-1">边距 (px)</label>
+    <input type="number" id="margin" value="0" min="0" max="50" class="w-full mb-2" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);">
+    <label class="d-block mb-1">容错率</label>
+    <select id="ecc-level" class="w-full mb-3" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);">
+      <option value="L">L (7%)</option>
+      <option value="M" selected>M (15%)</option>
+      <option value="Q">Q (25%)</option>
+      <option value="H">H (30%)</option>
+    </select>
+  </div>
+  <button id="generate-btn" class="btn btn-primary w-full mb-4" style="padding:10px 22px;font-size:.9rem;font-weight:600;">生成 QR码</button>
+  <div id="preview" style="margin-top:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:16px;"></div>
+  <button id="download-zip" class="btn btn-outline w-full" style="padding:10px 22px;font-size:.9rem;font-weight:600;margin-top:16px;display:none;">打包下载 ZIP</button>
+</section>
+
+<script src="qrcode.min.js"></script>
+<script src="jszip.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = {
+    text: document.getElementById('tab-text'),
+    csv: document.getElementById('tab-csv')
+  };
+  tabBtns.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      tabBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.tab;
+      Object.values(tabContents).forEach(c=>c.style.display='none');
+      tabContents[tab].style.display='block';
+    });
+  });
+  const generateBtn = document.getElementById('generate-btn');
+  const preview = document.getElementById('preview');
+  const downloadZipBtn = document.getElementById('download-zip');
+  generateBtn.addEventListener('click', async ()=>{
+    const fg = document.getElementById('fg-color').value;
+    const bg = document.getElementById('bg-color').value;
+    const size = parseInt(document.getElementById('size').value);
+    const margin = parseInt(document.getElementById('margin').value);
+    const ecc = document.getElementById('ecc-level').value;
+    let texts = [];
+    if(document.getElementById('tab-text').style.display!=='none'){
+      const ta = document.getElementById('textarea-input').value;
+      texts = ta.trim().split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+    }else{
+      const file = document.getElementById('csv-file').files[0];
+      if(!file){ alert('请选择CSV文件'); return;}
+      const text = await file.text();
+      const lines = text.trim().split(/\r?\n/);
+      lines.forEach(line=>{
+        const cols = line.split(',');
+        if(cols[0]!==undefined) texts.push(cols[0].trim());
+      });
+    }
+    if(texts.length===0){ alert('没有可生成的内容'); return;}
+    preview.innerHTML='';
+    preview.style.display='grid';
+    downloadZipBtn.style.display='none';
+    const zip = new JSZip();
+    const imgFolder = zip.folder('qrcodes');
+    const promises = texts.map((text, idx)=>{
+      return QRCode.toDataURL(text, {
+        width: size,
+        margin: margin,
+        color: { dark: fg, light: bg },
+        errorCorrectionLevel: ecc
+      }).then(dataUrl=>{
+        const img = document.createElement('img');
+        img.src = dataUrl;
+        img.style.width = '100px';
+        img.style.height = '100px';
+        img.style.objectFit = 'contain';
+        preview.appendChild(img);
+        const blob = fetch(dataUrl).then(r=>r.blob());
+        return blob.then(b=>{ imgFolder.file(`${idx+1}.png`, b); });
+      });
+    });
+    await Promise.all(promises);
+    zip.generateAsync({type:'blob'}).then(content=>{
+      const url = URL.createObjectURL(content);
+      downloadZipBtn.href = url;
+      downloadZipBtn.download = 'qrcodes.zip';
+      downloadZipBtn.style.display='inline-block';
+    });
+  });
+});
+</script>
+
+</main>
+
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
