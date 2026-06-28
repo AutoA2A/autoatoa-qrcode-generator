@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>历史记录 - 码上生成</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #2f6fed;
+    --primary-hover: #2259c7;
+    --primary-light: #e8f0fe;
+    --bg: #f0f4ff;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 0 12px rgba(0,0,0,.08);
+    --radius: 8px;
+    --spacing-sm: 16px;
+    --spacing-md: 24px;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== Top Navigation ===== */
+  .navbar {
+    background: var(--card);
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
+  }
+  .navbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    gap: var(--spacing-sm);
+  }
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--primary);
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .navbar-brand svg { width: 28px; height: 28px; flex-shrink: 0; }
+  .navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+    flex-wrap: wrap;
+  }
+  .navbar-links a {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    font-size: .875rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background .2s, color .2s;
+    white-space: nowrap;
+  }
+  .navbar-links a:hover { background: var(--primary-light); color: var(--primary); }
+  .navbar-links a.active { background: var(--primary-light); color: var(--primary); font-weight: 600;urger */
+  .navbar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius);
+  }
+  .navbar-toggle span {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--text);
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: .3s;
+  }
+
+  /* ===== Page Header ===== */
+  .page-header {
+    background: linear-gradient(135deg, #2f6ed 0%, #4a8af7 100%);
+    color: #fff;
+    padding: var(--spacing-md) 0;
+  }
+  .page-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+  }
+  .page-header h1 { font-size: 1.5rem; font-weight: 700; }
+  .page-header p { font-size: .9rem; opacity: .85; margin-top: 4px; }
+
+  /* ===== Main Container ===== */
+  .main-wrapper {
+    flex: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .navbar-inner { flex-wrap: wrap; height: auto; padding: 10px var(--spacing-sm); }
+    .navbar-toggle { display: block; }
+    .navbar-links {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      gap: 2px;
+      padding-top: var(--spacing-sm);
+    }
+    .navbar-links.open { display: flex; }
+    .navbar-links a { width: 100%; padding: 10px 14px; }
+    .page-header h1 { font-size: 1.25rem; }
+    .main-wrapper { padding: var(--spacing-sm); }
+  }
+  @media (max-width: 480px) {
+    .navbar-brand { font-size: 1rem; }
+    .navbar-brand svg { width: 22px; height: 22px; }
+  }
+
+  /* ===== Utility ===== */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--spacing-md);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    text-decoration: none;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn-outline:hover { background: var(--primary-light); }
+</style>
+<meta name="description" content="展示localStorage中保存的生成记录，支持查看、重新编辑、下载、删除单条或清空全部"><meta name="keywords" content="二维码生成,QR码,自定义颜色,批量生成,历史记录,下载PNG,SVG导出,容错率"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:title" content="历史记录 - 码上生成"><meta property="og:description" content="展示localStorage中保存的生成记录，支持查看、重新编辑、下载、删除单条或清空全部"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="历史记录 - 码上生成"><meta name="twitter:description" content="展示localStorage中保存的生成记录，支持查看、重新编辑、下载、删除单条或清空全部"><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"历史记录 - 码上生成","description":"展示localStorage中保存的生成记录，支持查看、重新编辑、下载、删除单条或清空全部","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}}</script><style data-a2a="basecss">*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0}img,canvas,svg,video,table{max-width:100%;height:auto}pre,code{white-space:pre-wrap;word-break:break-word}[data-a2a="header"]{width:100%}@media(max-width:640px){body{font-size:15px}}</style></head>
+<body>
+
+<!-- ===== Top Navigation ===== -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand" aria-label="码上生成 首页">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="10" height="10" rx="2" fill="#2f6fed"/>
+        <rect x="16" y="2" width="10" height="10" rx="2" fill="#2f6fed"/>
+        <rect x="2" y="16" width="10" height="10" rx="2" fill="#2f6fed"/>
+        <rect x="16" y="16" width="4" height="4" rx="1" fill="#2f6fed"/>
+        <rect x="22" y="16" width="4" height="4" rx="1" fill="#2f6fed"/>
+        <rect x="16" y="22" width="4" height="4" rx="1" fill="#2f6fed"/>
+        <rect x="22" y="22" width="4" height="4" rx="1" fill="#2f6fed"/>
+      </svg>
+      码上生成
+    </a>
+    <button class="navbar-toggle" aria-label="切换菜单" onclick="document.querySelector('.navbar-links').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="navbar-links">
+      <li><a href="index.html">首页</a></li>
+      <li><a href="batch.html">批量生成</a></li>
+      <li><a href="history.html">历史记录</a></li>
+      <li><a href="guide.html">使用指南</a></li>
+      <li><a href="style.html">样式定制</a></li>
+      <li><a href="share.html">分享码</a></li>
+      <li><a href="api.html">API文档</a></li>
+      <li><a href="settings.html">设置</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===== Page Header ===== -->
+<header class="page-header">
+  <div class="page-header-inner">
+    <h1>码上生成</h1>
+    <p>在线QR码生成器 — 快速、免费、无需注册</p>
+  </div>
+</header>
+
+<!-- ===== Main Content Area ===== -->
+<main class="main-wrapper">
+  
+<sectionclass="card">
+  <h2>历史记录</h2>
+  <div style="display:flex; gap:var(--spacing-sm); flex-wrap:wrap; margin-bottom:var(--spacing-md);">
+    <a href="index.html" class="btn btn-outline">返回首页</a>
+    <a href="settings.html" class="btn btn-outline">前往设置</a>
+    <button id="clearAllBtn" class="btn btn-outline">清空全部</button>
+  </div>
+  <div id="historyList" style="margin-top:var(--spacing-md);"></div>
+</section>
+
+<script>
+  // 从 localStorage 读取历史记录，格式：[{id:String, data:String, time:String}]
+  function loadRecords() {
+    const raw = localStorage.getItem('history');
+    return raw ? JSON.parse(raw) : [];
+  }
+  function saveRecords(records) {
+    localStorage.setItem('history', JSON.stringify(records));
+  }
+  function renderRecords() {
+    const container = document.getElementById('historyList');
+    const records = loadRecords();
+    container.innerHTML = '';
+    if (records.length === 0) {
+      container.innerHTML = '<p style="color:var(--text-secondary);">暂无历史记录</p>';
+      return;
+    }
+    // 按时间倒序显示
+    records.slice().sort((a,b)=>new Date(b.time)-new Date(a.time)).forEach(rec=>{
+      const item = document.createElement('div');
+      item.style.display = 'flex';
+      item.style.justifyContent = 'space-between';
+      item.style.alignItems = 'center';
+      item.style.padding = 'var(--spacing-sm) 0';
+      item.style.borderBottom = '1px solid var(--border)';
+      item.dataset.id = rec.id;
+
+      const info = document.createElement('div');
+      const contentDiv = document.createElement('div');
+      contentDiv.textContent = rec.data;
+      contentDiv.style.fontSize = '.9rem';
+      contentDiv.style.color = 'var(--text)';
+      const timeDiv = document.createElement('div');
+      timeDiv.textContent = new Date(rec.time).toLocaleString();
+      timeDiv.style.fontSize = '.75rem';
+      timeDiv.style.color = 'var(--text-secondary)';
+      info.appendChild(contentDiv);
+      info.appendChild(timeDiv);
+
+      const actions = document.createElement('div');
+      actions.style.display = 'flex';
+      actions.style.gap = 'var(--spacing-sm)';
+      const viewBtn = document.createElement('button');
+      viewBtn.textContent = '查看';
+      viewBtn.className = 'btn btn-outline';
+      viewBtn.dataset.action = 'view';
+      const editBtn = document.createElement('button');
+      editBtn.textContent = '编辑';
+      editBtn.className = 'btn btn-outline';
+      editBtn.dataset.action = 'edit';
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '删除';
+      delBtn.className = 'btn btn-outline';
+      delBtn.dataset.action = 'delete';
+      const dlBtn = document.createElement('button');
+      dlBtn.textContent = '下载';
+      dlBtn.className = 'btn btn-outline';
+      dlBtn.dataset.action = 'download';
+      actions.append(viewBtn, editBtn, delBtn, dlBtn);
+
+      item.append(info, actions);
+      container.appendChild(item);
+    });
+
+    // 事件委托
+    container.addEventListener('click', e=>{
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const id = btn.parentElement.parentElement.dataset.id;
+      const records = loadRecords();
+      const rec = records.find(r=>r.id===id);
+      if (!rec) return;
+      switch(action){
+        case 'view':
+          alert(rec.data);
+          break;
+        case 'edit':
+          // 带参数跳转到首页，假设首页能读取 ?data=
+          location.href = 'index.html?data='+encodeURIComponent(rec.data);
+          break;
+        case 'delete':
+          if (confirm('确定删除此条记录？')){
+            const updated = records.filter(r=>r.id!==id);
+            saveRecords(updated);
+            renderRecords();
+          }
+          break;
+        case 'download':
+          const blob = new Blob([rec.data], {type:'text/plain'});
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `record_${id}.txt`;
+          a.click();
+          URL.revokeObjectURL(url);
+          break;
+      }
+    });
+  }
+  document.getElementById('clearAllBtn').addEventListener('click',()=>{
+    if (confirm('确定清空所有历史记录？')){
+      localStorage.removeItem('history');
+      renderRecords();
+    }
+  });
+  // 初始渲染
+  renderRecords();
+</script>
+
+</main>
+
+<footer data-a2a="footer" style="margin-top:48px;padding:28px 16px;border-top:1px solid rgba(127,127,127,.16);text-align:center;font-family:system-ui,-apple-system,'PingFang SC',sans-serif;line-height:1.9;color:#8a8f99;background:transparent"><a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:10px"><img src="https://agent.oagi.com.cn/uploads/202606/29ea3ed5413830b3.png" alt="AutoA2A" style="height:36px;vertical-align:middle;border:0"></a><div style="font-size:13.5px;color:#6b7280;max-width:760px;margin:0 auto 6px">✅️ <b>AutoA2A</b> · 智能体互连 Agent to Agent 平台——让智能体无缝发现、协商、协作与安全交换数据，开启 AI 即服务新时代。</div><div style="font-size:13px">本网站由 <a href="https://www.autoa2a.org" target="_blank" rel="noopener" style="color:#f2603c;text-decoration:none;font-weight:600">www.autoa2a.org</a> 多个 AI 协作生成</div><div style="font-size:12px;color:#aab;margin-top:6px">Copyright © 2025 - 2026 AutoA2A. All Rights Reserved. A2A版权所有</div></footer></body>
+</html>
